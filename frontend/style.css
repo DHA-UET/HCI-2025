@@ -1,57 +1,114 @@
+/* ================= VARIABLES & RESET ================= */
+:root {
+    /* Lấy cảm hứng từ Gemini Dark Theme */
+    --bg-color: #131314;
+    --sidebar-bg: #1e1f20;
+    --chat-bg: #131314;
+    --input-bg: #282a2c;
+    --input-focus-bg: #303134;
+    
+    /* Màu Accent & Text */
+    --primary-color: #8ab4f8; /* Xanh dịu mắt, độ tương phản cao */
+    --text-primary: #e3e3e3;
+    --text-secondary: #a8c7fa;
+    --border-color: #444746;
+    
+    /* Bubble Colors */
+    --msg-bot-bg: #282a2c; /* Xám đậm */
+    --msg-user-bg: #004a77; /* Xanh đậm nhưng đủ sáng để đọc chữ trắng */
+    
+    --border-radius-lg: 24px;
+    --border-radius-md: 16px;
+    --border-radius-sm: 8px;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-size: 16px; /* Cỡ chữ chuẩn, dễ đọc */
+    overflow: hidden; /* Tránh thanh cuộn trang */
+}
+
+/* ================= LAYOUT CONTAINER ================= */
 .container {
     height: 100vh;
     width: 100vw;
     display: flex;
 }
 
+/* ================= SIDEBAR (History & Camera) ================= */
 .histories-bar {
-    background-color: orange;
+    background-color: var(--sidebar-bg);
+    width: 300px;
     height: 100%;
-    width: 350px;
+    display: flex;
+    flex-direction: column; /* Xếp dọc */
+    align-items: center;
+    padding: 20px 15px; /* Giảm padding ngang chút */
+    gap: 20px;
+    border-right: 1px solid var(--border-color);
+}
+
+/* Tiêu đề sidebar */
+.histories-bar h2 {
+    width: 100%;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-top: 10px;
+    padding-left: 10px;
+    font-weight: 500;
+}
+
+/* Danh sách lịch sử */
+.histories {
+    width: 100%;
+    flex: 1; /* Chiếm hết khoảng trống còn lại */
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    gap: 20px;
+    gap: 5px;
 }
 
-.histories {
-    padding: 10px;
-    width: 100%;
-    height: 100%;
-}
-
+/* Item trong lịch sử */
 .histories a {
-    /* background-color: brown; */
-    width: 100%;
-    padding: 50px 0;
+    text-decoration: none;
+    color: var(--text-primary);
+    padding: 12px 15px;
+    border-radius: var(--border-radius-sm);
+    display: flex; /* Để icon và chữ nằm ngang */
+    align-items: center;
+    gap: 12px; /* Khoảng cách giữa icon và chữ */
+    font-size: 0.9rem;
+    transition: background 0.2s;
 }
 
-.camera-preview {
-    height: 200px;
-    width: 100%;
-    background-color: brown;
-    border-radius: 10px;
+.histories a:hover {
+    background-color: rgba(255, 255, 255, 0.08);
 }
 
-.camera-preview video,
-.camera-preview canvas {
-    transform: scaleX(-1);
+/* SVG icon trong history */
+.histories a svg {
+    fill: var(--text-secondary);
+    min-width: 20px; /* Cố định kích thước icon */
 }
 
+/* --- Camera Section --- */
 .camera-preview {
     position: relative;
-    height: 200px;
     width: 100%;
-    background-color: brown;
-    border-radius: 10px;
+    height: 200px; /* Chiều cao cố định cho đẹp */
+    background-color: #000;
+    border-radius: var(--border-radius-md);
     overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    border: 2px solid var(--border-color);
 }
 
 .camera-preview video,
@@ -62,99 +119,311 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: scaleX(-1); /* lật cam trước */
+    transform: scaleX(-1); /* Gương */
 }
 
-.histories {
+.settings-footer {
     width: 100%;
-    flex: 1;
-    background-color: cadetblue;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-primary);
+    cursor: pointer;
+    border-radius: var(--border-radius-sm);
+    transition: 0.2s;
+    margin-top: auto; /* Đẩy xuống đáy sidebar */
 }
 
+.settings-footer:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.settings-footer svg {
+    fill: var(--text-secondary); /* Màu icon nhạt hơn chữ */
+}
+
+/* ================= MAIN CHAT AREA ================= */
 .main {
-    height: 100%;
     flex: 1;
-    background-color: cornflowerblue;
+    height: 100%;
+    background-color: var(--chat-bg);
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
-.main .messages {
+/* --- Header Title --- */
+.title {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.title h2 {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin: 0;
+    align-self: center;
+}
+
+/* --- Messages Area --- */
+.messages {
     flex: 1;
+    padding: 20px 30px; /* Padding đều hơn */
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    scroll-behavior: smooth;
 }
 
-.inp-message {
-    background-color: deeppink;
-    height: 100px;
+
+/* --- Message Row (Hàng chứa Avatar + Bubble) --- */
+.message-row {
+    display: flex;
+    align-items: flex-end; /* Căn avatar nằm dưới cùng ngang với dòng cuối của tin nhắn */
+    margin-bottom: 20px;
+    gap: 10px; /* Khoảng cách giữa avatar và bubble */
+    animation: fadeIn 0.3s ease;
     width: 100%;
+}
+
+/* Nếu là tin nhắn của User (Me) */
+.message-row.me {
+    flex-direction: row-reverse; /* Đảo ngược thứ tự: Bubble trước, Avatar sau */
+    justify-content: flex-start; /* Đảm bảo nó vẫn nằm bên phải */
+}
+
+
+/* --- Avatar Styling --- */
+.avatar {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0; /* Không bị co lại khi tin nhắn dài */
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%; /* Hình tròn */
+    object-fit: cover; /* Đảm bảo ảnh không bị méo */
+    /* Thêm viền nhẹ để tách biệt với nền tối */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+
+/* --- Message Bubble Styling (Bong bóng chat) --- */
+/* Đổi tên class cũ .message thành .message-bubble và chỉnh sửa chút */
+.message-bubble {
+    padding: 12px 30px;
+    border-radius: var(--border-radius-lg);
+    max-width: 70%; /* Giảm max-width một chút vì đã tốn chỗ cho avatar */
+    line-height: 1.5;
+    font-size: 1rem;
+    word-wrap: break-word;
+    /* position: relative; <- Không cần nữa */
+}
+
+/* Bot Bubble */
+.message-bubble:not(.me) {
+    background-color: var(--msg-bot-bg);
+    color: var(--text-primary);
+    /* Bo góc nhọn ở dưới bên trái để chỉ vào avatar */
+    border-bottom-left-radius: 4px; 
+}
+
+/* User Bubble */
+.message-bubble.me {
+    background-color: var(--msg-user-bg);
+    color: #ffffff;
+    /* Bo góc nhọn ở dưới bên phải để chỉ vào avatar */
+    border-bottom-right-radius: 4px;
+}
+
+/* Hiệu ứng hiện tin nhắn giữ nguyên */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive cho mobile */
+@media (max-width: 768px) {
+    .message-bubble {
+        max-width: 80%;
+    }
+    .avatar {
+        width: 32px; /* Avatar nhỏ hơn trên mobile */
+        height: 32px;
+    }
+}
+
+/* ================= INPUT AREA ================= */
+.inp-message {
+    width: 100%;
+    padding: 20px;
+    background-color: var(--chat-bg); /* Cùng màu nền để tạo cảm giác liền mạch */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .inp-box {
-    background-color: #fff;
-    height: 70px;
-    width: 90%;
-    border-radius: 40px;
+    background-color: var(--input-bg);
+    width: 80%; /* Giới hạn chiều rộng giống Chatbot hiện đại */
+    max-width: 800px;
+    height: 60px;
+    border-radius: 30px; /* Pill shape */
     display: flex;
+    align-items: center;
+    padding: 5px 10px 5px 25px;
+    transition: 0.3s;
+    border: 1px solid transparent;
+    align-self: center;
+    margin-bottom: 50px;
+}
+
+/* Focus effect cho input container */
+.inp-box:focus-within {
+    background-color: var(--input-focus-bg);
+    border-color: rgba(255,255,255,0.1);
+    box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.3);
 }
 
 #inp-message {
-    height: 100%;
-    /* width: 90%; */
     flex: 1;
-    padding: 10px 25px;
-    font-size: larger;
-    outline: none;
+    background: transparent;
     border: none;
-    border-radius: 40px;
-    /* background-color: aquamarine; */
+    outline: none;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    height: 100%;
 }
 
+#inp-message::placeholder {
+    color: #6e7072;
+}
+
+/* Button Send */
 .btn-message {
-    font-weight: bolder;
-    font-size: larger;
-    /* background-color: dodgerblue; */
-    height: 100%;
-    aspect-ratio: 1/1;
+    height: 45px;
+    width: 45px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    transition: .2s;
+    transition: all 0.2s ease;
+    margin-left: 5px;
+    color: var(--text-secondary); /* Màu mặc định của icon */
 }
 
 .btn-message:hover {
-    background-color: dodgerblue;
-    color: #fff;
+    background-color: rgba(138, 180, 248, 0.1);
+    color: var(--primary-color); /* Hover thì icon chuyển xanh */
 }
 
-.messages {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    overflow-y: scroll;
+.btn-message svg {
+    width: 24px;
+    height: 24px;
+    margin-right: 2px;
 }
 
-.message {
-    background-color: #ccc;
-    width: fit-content;
-    padding: 20px;
-    border-radius: 30px;
-    max-width: 60%;
-}
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
 
-.message.me {
-    background-color: #60b0ff;
-    align-self: flex-end;
-}
+    .histories-bar {
+        display: none;
+    }
 
-.title {
+    .inp-box {
+        width: 95%;
+    }
+    
+    .messages {
+        padding: 20px 10px;
+    }
+    
+    .message {
+        max-width: 90%;
+    }
+}/* ================= VOICE VISUALIZER ================= */
+.voice-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;  
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); 
+    backdrop-filter: blur(4px); 
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    z-index: 10;
+    border-radius: 0; 
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
+
+.voice-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.voice-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.voice-text {
+    color: #e3e3e3;
+    font-size: 1.5rem;
+    font-weight: 500;
+    animation: pulseText 1.5s infinite ease-in-out;
+}
+
+.audio-wave {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 60px;
+}
+
+.audio-wave span {
+    display: block;
+    width: 8px;
+    height: 10%; /* Chiều cao ban đầu thấp */
+    background: #8ab4f8; /* Màu xanh Gemini */
+    border-radius: 50px;
+    animation: wave 1.2s infinite ease-in-out;
+}
+
+.audio-wave span:nth-child(1) { animation-delay: 0.0s; height: 20%; background: #4285F4; }
+.audio-wave span:nth-child(2) { animation-delay: 0.2s; height: 40%; background: #EA4335; }
+.audio-wave span:nth-child(3) { animation-delay: 0.4s; height: 70%; background: #FBBC05; }
+.audio-wave span:nth-child(4) { animation-delay: 0.2s; height: 40%; background: #34A853; }
+.audio-wave span:nth-child(5) { animation-delay: 0.0s; height: 20%; background: #4285F4; }
+
+@keyframes wave {
+    0%, 100% {
+        height: 20%;
+        transform: scaleY(1);
+    }
+    50% {
+        height: 100%;
+        transform: scaleY(1.2);
+        box-shadow: 0 0 10px rgba(138, 180, 248, 0.5);
+    }
+}
+
+@keyframes pulseText {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+

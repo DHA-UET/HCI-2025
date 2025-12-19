@@ -6,7 +6,7 @@ from database import DB
 import whisper
 import numpy as np
 
-client = genai.Client(api_key="AIzaSy...")
+client = genai.Client(api_key="AIzaSyBWv4FiN-yv3n5wUQUK0vTfRl0KtCfkezg")
 MODEL_ID = "gemini-2.5-flash" 
 EMBEDDING_MODEL = "text-embedding-004"
 

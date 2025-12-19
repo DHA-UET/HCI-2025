@@ -7,21 +7,68 @@ import {
 const seed = Math.round(Math.random() * 775_775_775)
 console.log(seed)
 
-let messages = []
+// let messages = []
+let messages = [
+    { from: "bot", message: "Xin chào! Tôi là trợ lý ảo của bạn. Tôi có thể giúp gì cho bạn hôm nay?" },
+    { from: "user", message: "Chào bạn, hôm nay trời thế nào nhỉ?" }
+  ];
 let sessions = []
+
+function toggleVoiceOverlay(show) {
+  const overlay = document.getElementById("voice-overlay");
+  if (show) {
+    overlay.classList.add("active");
+  } else {
+    overlay.classList.remove("active");
+  }
+}
+
+// function renderMessages() {
+//   const list = document.getElementById("message-list");
+
+//   list.innerHTML = messages.map(message => {
+//     return `<div class="message ${message.from === "user" ? "me" : ""}">
+//       ${message.message}
+//     </div>`;
+//   }).join("");
+
+//   list.scrollTo({
+//     top: list.scrollHeight,
+//     behavior: "smooth"
+//   });
+// }
+
+// renderMessages()
 
 function renderMessages() {
   const list = document.getElementById("message-list");
 
+  const botAvatar = "./public/voicon.jpg";
+
+  const userAvatar = "./public/avatar_user.jpg"
+
   list.innerHTML = messages.map(message => {
-    return `<div class="message ${message.from === "user" ? "me" : ""}">
-      ${message.message}
-    </div>`;
+      const isUser = message.from === "user";
+      
+      const currentAvatar = isUser ? userAvatar : botAvatar;
+      const rowClass = isUser ? "message-row me" : "message-row";
+      const bubbleClass = isUser ? "message-bubble me" : "message-bubble";
+
+      return `
+          <div class="${rowClass}">
+              <div class="avatar">
+                  <img src="${currentAvatar}" alt="${message.from} avatar" onerror="this.src='${userAvatar}'">
+              </div>
+              <div class="${bubbleClass}">
+                  ${message.message}
+              </div>
+          </div>
+      `;
   }).join("");
 
   list.scrollTo({
-    top: list.scrollHeight,
-    behavior: "smooth"
+      top: list.scrollHeight,
+      behavior: "smooth"
   });
 }
 
@@ -208,6 +255,7 @@ async function startRecording() {
   if (isRecording) return;
 
   beepStartRecording()
+  toggleVoiceOverlay(true); 
 
   messages.push({message: "...", from: "user"})
   renderMessages()
@@ -232,6 +280,7 @@ function stopRecording() {
   if (!isRecording) return;
 
   beepStopRecording()
+  toggleVoiceOverlay(false);
 
   mediaRecorder.onstop = async () => {
     const blob = new Blob(audioChunks, { type: "audio/webm" });
@@ -265,6 +314,7 @@ function cancelRecording() {
   if (!isRecording) return;
 
   beepStopRecording();
+  toggleVoiceOverlay(false);
 
   mediaRecorder.onstop = null;
 
